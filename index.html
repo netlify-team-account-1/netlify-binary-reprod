@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Netlify binary reprod</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -36,9 +36,9 @@
       <button type="button" @click="response = await reflect(contentType)">Test</button>
       <template x-if="response">
         <div>
-          <p>Content-Type: <span x-text="contentType"></span></p>
+          <p>Content-Type: <code x-text="contentType"></code></p>
           <p>Sent: AAABAAABAAAAAAAAB2V4YW1wbGUDY29tAAABAAE=</p>
-          <p>Recieved: <span x-text="response"></span></p>
+          <p>Recieved: <code x-text="response"></code></p>
         </div>
       </template>
     </div>
