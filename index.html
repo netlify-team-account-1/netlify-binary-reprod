@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Netlify binary reprod</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script>
+      // data: AAABAAABAAAAAAAAB2V4YW1wbGUDY29tAAABAAE=
+      const data = new Uint8Array([
+        0, 0, 1, 0, 0, 1, 0, 0, 0, 0,
+        0, 0, 7, 101, 120, 97, 109, 112, 108, 101,
+        3, 99, 111, 109, 0, 0, 1, 0, 1
+      ]);
+      async function reflect(contentType) {
+        const response = await fetch('/.netlify/functions/reflect', {
+          method: "POST",
+          headers: {
+            "Content-Type": contentType,
+            "Content-Length": data.length
+          },
+          body: data
+        });
+        return response.text();
+      }
+    </script>
+  </head>
+  <body>
+    <h1>Netlify binary reprod</h1>
+    <div x-data="{ contentType: 'application/dns-message', response: '' }">
+      <select x-model="contentType">
+        <option>application/dns-message</option>
+        <option>application/octet-stream</option>
+      </select>
+      <button type="button" @click="response = await reflect(contentType)">Test</button>
+      <template x-if="response">
+        <div>
+          <p>Content-Type: <span x-text="contentType"></span></p>
+          <p>Sent: AAABAAABAAAAAAAAB2V4YW1wbGUDY29tAAABAAE=</p>
+          <p>Recieved: <span x-text="response"></span></p>
+        </div>
+      </template>
+    </div>
+  </body>
+</html>
