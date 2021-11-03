@@ -29,7 +29,7 @@
   <body>
     <h1>Netlify binary reprod</h1>
     <div x-data="{ contentType: 'application/dns-message', response: '' }">
-      <select x-model="contentType">
+      <select x-model="contentType" @change="response = ''">
         <option>application/dns-message</option>
         <option>application/octet-stream</option>
       </select>
