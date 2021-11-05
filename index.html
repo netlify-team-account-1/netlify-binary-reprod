@@ -7,20 +7,22 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script>
-      // data: AAABAAABAAAAAAAAB2V4YW1wbGUDY29tAAABAAE=
-      const data = new Uint8Array([
-        0, 0, 1, 0, 0, 1, 0, 0, 0, 0,
-        0, 0, 7, 101, 120, 97, 109, 112, 108, 101,
-        3, 99, 111, 109, 0, 0, 1, 0, 1
-      ]);
-      async function reflect(contentType) {
+      function base64toArray(str) {
+        return new Uint8Array(
+          atob(str).
+          split('').
+          map((c) => c.charCodeAt(0))
+        );
+      }
+
+      async function reflect(contentType, data) {
         const response = await fetch('/.netlify/functions/reflect', {
           method: "POST",
           headers: {
             "Content-Type": contentType,
             "Content-Length": data.length
           },
-          body: data
+          body: base64toArray(data)
         });
         return response.text();
       }
@@ -28,16 +30,21 @@
   </head>
   <body>
     <h1>Netlify binary reprod</h1>
-    <div x-data="{ contentType: 'application/dns-message', response: '' }">
-      <select x-model="contentType" @change="response = ''">
-        <option>application/dns-message</option>
-        <option>application/octet-stream</option>
-      </select>
-      <button type="button" @click="response = await reflect(contentType)">Test</button>
+    <div x-data="{ contentType: 'application/dns-message', data: 'AAABAAABAAAAAAAAB2V4YW1wbGUDY29tAAABAAE=', response: '' }">
+      <form @submit.prevent="response = await reflect(contentType, data)">
+        <label for="data">Base64-encoded data</label>
+        <textarea id="data" x-model="data" @input="response = ''"></textarea>
+        <label for="contentType">Content-Type</label>
+        <select id="contentType" x-model="contentType" @change="response = ''">
+          <option>application/dns-message</option>
+          <option>application/octet-stream</option>
+        </select>
+        <button type="submit">Test</button>
+      </form>
       <template x-if="response">
         <div>
           <p>Content-Type: <code x-text="contentType"></code></p>
-          <p>Sent: <code>AAABAAABAAAAAAAAB2V4YW1wbGUDY29tAAABAAE=</code></p>
+          <p>Sent: <code x-text="data"></code></p>
           <p>Recieved: <code x-text="response"></code></p>
         </div>
       </template>
